@@ -58,7 +58,7 @@ z1[i, j, k] <= 100;
 subject to rangemin1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
 z1[i, j, k] >= -100;
 
-param weight_1{i in 1..filter_height_1, j in 1..filter_width_1, k in 1..filter_depth_1, l in 1..depth_1};
+param weight_1{i in 1..filter_height_1, j in 1..filter_width_1, k in 1..depth_1, l in 1..filter_depth_1};
 
 subject to preactivation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
 z1[i, j, k] = bias_1[k]
