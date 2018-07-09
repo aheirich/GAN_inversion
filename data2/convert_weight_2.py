@@ -11,7 +11,7 @@ filterCount = 1
 heightCount = 1
 depthCount = 1
 
-first = True
+print("param weight_2 :=")
 
 for line in sys.stdin:
   allWords = line.strip().split(' ')
@@ -35,9 +35,6 @@ for line in sys.stdin:
   assert len(words) == 3
 
   if heightCount == 1:
-    if not first:
-      print(";\n")
-    first = False
     print("[*, *, " + str(depthCount) + ", " + str(filterCount) + "] : 1 2 3 :=")
   print(str(heightCount) + ' ' + words[0] + ' ' + words[1] + ' ' + words[2])
 
