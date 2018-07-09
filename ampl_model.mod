@@ -35,8 +35,8 @@ param rows_1 := 50;
 param columns_1 := 50;
 param depth_1 := 16;
 
-param filter_height_1 := 8;
-param filter_width_1 := 3;
+param filter_height_1 := 3;
+param filter_width_1 := 8;
 param filter_depth_1 := 2;
 
 param padding_height_1 := 4;
@@ -58,7 +58,7 @@ z1[i, j, k] <= 100;
 subject to rangemin1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
 z1[i, j, k] >= -100;
 
-param weight_1{i in 1..filter_height_1, j in 1..filter_width_1, k in 1..depth_1, l in 1..filter_depth_1};
+param weight_1{i in 1..filter_height_1, j in 1..filter_width_1, l in 1..filter_depth_1, k in 1..depth_1};
 
 subject to preactivation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
 z1[i, j, k] = bias_1[k]
@@ -153,8 +153,8 @@ param rows_2 := 25;
 param columns_2 := 25;
 param depth_2 := 32;
 
-param filter_height_2 := 3;
-param filter_width_2 := 8;
+param filter_height_2 := 8;
+param filter_width_2 := 3;
 param filter_depth_2 := 16;
 
 param bias_2{i in 1..depth_2};
