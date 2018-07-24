@@ -1,10 +1,11 @@
+
 #!/usr/bin/python3
 
 import sys
 
-width = 50
-height = 50
-depth = 16
+width = 25
+height = 25
+depth = 32
 
 data = []
 lineCounter = 1
@@ -36,7 +37,7 @@ for line in file:
           string = string + ' ' + word
         print(string)
         data = []
-
+  
     except ValueError:
       pass
 
