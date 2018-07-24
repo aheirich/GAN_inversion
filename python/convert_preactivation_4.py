@@ -20,7 +20,7 @@ for line in file:
     except ValueError:
       pass
 
-string = 'param Z4 :'
+string = 'param a4_ :'
 for i in range(size): string = string + ' ' + str(i + 1)
 string = string + ' :='
 print(string)

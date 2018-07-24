@@ -1,0 +1,21 @@
+model ampl_model.mod ;
+data real_example/real1/X.dat ;
+data real_example/real1/Z1.dat ;
+data real_example/real1/A1.dat ;
+data real_example/real1/Z2.dat ;
+data real_example/real1/A2.dat ;
+data real_example/real1/Z3.dat ;
+data real_example/real1/A3.dat ;
+data real_example/real1/Z4.dat ;
+data weight/ampl_bias_1.dat ;
+data weight/ampl_bias_2.dat ;
+data weight/ampl_bias_3.dat ;
+data weight/ampl_bias_4.dat ;
+data weight/ampl_weight_1.dat ;
+data weight/ampl_weight_2.dat ;
+data weight/ampl_weight_3.dat ;
+data weight/ampl_weight_4.dat ;
+option solver "/home/aheirich/bin/ampl.linux64/knitro" ;
+option knitro_options 'outlev=3';
+solve ;
+

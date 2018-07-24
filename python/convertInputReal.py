@@ -30,7 +30,7 @@ assert len(data[1]) == width * height
 def printLayer(z):
   effectiveWidth = width + 2 * padding_width
 
-  string = 'param x[*,*,' + str(z + 1) + '] : '
+  string = '[*,*,' + str(z + 1) + '] : '
   for i in range(effectiveWidth): string = string + str(i + 1) + ' '
   string = string + ':='
   print(string)
@@ -51,11 +51,12 @@ def printLayer(z):
     print(string)
 
   for i in range(padding_height):
-    string = str(i + 1)
+    string = str(i + 1 + height + padding_height)
     for j in range(effectiveWidth): string = string + ' 0'
     print(string)
-  print(';\n')
 
+print('param x_ :=')
 printLayer(0)
 printLayer(1)
+print(';\n')
 

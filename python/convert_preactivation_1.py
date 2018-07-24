@@ -14,6 +14,8 @@ assert len(sys.argv) == 3
 file = open(sys.argv[1])
 variable = sys.argv[2]
 
+print('param ' + variable + ' :=')
+
 for line in file:
   words = line.strip().split(' ')
   for word in words:
@@ -24,7 +26,7 @@ for line in file:
       data.append(word)
       if len(data) == depth:
         if columnCounter == 0:
-          string = 'param ' + variable + '[' + str(lineCounter) + ', *, *] :'
+          string = '[' + str(lineCounter) + ', *, *] :'
           lineCounter = lineCounter + 1
           for i in range(depth): string = string + ' ' + str(i + 1)
           string = string + ' :='

@@ -15,16 +15,15 @@ param padding_height_0 := 4;
 param padding_width_0 := 2;
 
 # inputs
-var x{i in 1..rows_0, j in 1..columns_0, k in 1..depth_0};
-subject to rangemaxx{i in 1..rows_0, j in 1..columns_0, k in 1..depth_0}:
+var x{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0};
+subject to rangemaxx{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0}:
 x[i, j, k] <= 100;
-subject to rangeminx{i in 1..rows_0, j in 1..columns_0, k in 1..depth_0}:
+subject to rangeminx{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0}:
 x[i, j, k] >= -100;
 
-param input_constraint{i in 1..rows_0, j in 1..columns_0};
-
-subject to constrainedInput{i in 1..rows_0, j in 1..columns_0}:
-x[i, j, 1] = input_constraint[i, j];
+# x[*,*,2] = x[1,*,2]
+subject to xLabel{i in 2..rows_0, j in 1..columns_0}:
+x[i + padding_height_0, j + padding_width_0, 2] = x[1 + padding_height_0, j + padding_width_0, 2];
 
 # layer 1 is 50x50x16 convolutional layer
 # each convolution filter is 3x8x2 with stride of 2,2
@@ -47,7 +46,7 @@ param padding_width_1 := 2;
 param bias_1{i in 1..depth_1};
 
 # activations
-var a1{i in 1..rows_1 + 2 * filter_height_1, j in 1..columns_1 + 2 * filter_width_1, k in 1..depth_1};
+var a1{i in 1..rows_1 + 2 * padding_height_1, j in 1..columns_1 + 2 * padding_width_1, k in 1..depth_1};
 
 
 
@@ -127,11 +126,11 @@ z1[i, j, k] = bias_1[k]
 
 
 # leaky Relu leakiness parameter
-param leakiness := 0.1;
+param leakiness := 0.2;
 
 # compute activations with padding
 subject to activation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-a1[i, j, k] = z1[i, j, k] * (1 / (1 + exp(-10000.0 * z1[i, j, k])))
+a1[i + padding_height_1, j + padding_width_1, k] = z1[i, j, k] * (1 / (1 + exp(-10000.0 * z1[i, j, k])))
 + (1 - (1 / (1 + exp(-10000.0 * z1[i, j, k])))) * leakiness * z1[i, j, k];
 
 # zero padding for a1
@@ -140,9 +139,9 @@ a1[i, j, k] = 0;
 subject to zeropad1_2{i in 1..padding_height_0, j in 1..columns_1, k in 1..depth_1}:
 a1[i + padding_height_0 + rows_1, j, k] = 0;
 subject to zeropad1_3{i in 1..rows_1, j in 1..padding_width_0, k in 1..depth_1}:
-a1[i, j, k] = 0;
+a1[i + padding_height_0, j, k] = 0;
 subject to zeropad1_4{i in 1..rows_1, j in 1..padding_width_0, k in 1..depth_1}:
-a1[i, j + padding_width_0 + columns_1, k] = 0;
+a1[i + padding_height_0, j + padding_width_0 + columns_1, k] = 0;
 
 
 
@@ -294,4 +293,42 @@ z4[j] = bias_4[j] + z3[i] * weight_4[i, j];
 
 subject to activation4{i in 1..columns_4}:
 a4[i] = 1.0 / (1.0 + exp(-z4[i]));
+
+
+### activation targets
+
+var x_{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0};
+var z1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
+var a1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
+var a2_{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2};
+var z2_{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2};
+var a3_{i in 1..columns_3};
+var z3_{i in 1..columns_3};
+var a4_{i in 1..columns_4};
+var z4_{i in 1..columns_4};
+
+subject to xValue{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0}:
+x[i, j, k] = x_[i, j, k];
+
+subject to z1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+z1[i, j, k] = z1_[i, j, k];
+
+subject to a1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+a1[i + padding_height_1, j + padding_width_1, k] = a1_[i, j, k];
+
+subject to a2Value{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
+a2[i, j, k] = a2_[i, j, k];
+
+subject to z2Value{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
+z2[i, j, k] = z2_[i, j, k];
+
+subject to a3Value{i in 1..columns_3}:
+a3[i] = a3_[i];
+
+subject to z3Value{i in 1..columns_3}:
+z3[i] = z3_[i];
+
+subject to z4Value{i in 1..columns_4}:
+a4[i] = a4_[i];
+
 

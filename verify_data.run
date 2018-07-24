@@ -1,0 +1,17 @@
+model ampl_model.mod ;
+data real_example/real1/X.dat ;
+data real_example/real1/Z1.dat ;
+data real_example/real1/A1.dat ;
+data real_example/real1/Z2.dat ;
+data real_example/real1/A2.dat ;
+data real_example/real1/Z3.dat ;
+data real_example/real1/A3.dat ;
+data real_example/real1/Z4.dat ;
+display x_;
+display z1_;
+display a1_;
+display z2_;
+display a2_;
+display z3_;
+display a3_;
+display a4_;

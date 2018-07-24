@@ -6,8 +6,9 @@ import sys
 data = []
 size = 16
 
-assert len(sys.argv) == 2
+assert len(sys.argv) == 3
 file = open(sys.argv[1])
+variable = sys.argv[2]
 
 for line in file:
   words = line.strip().split(' ')
@@ -20,9 +21,7 @@ for line in file:
     except ValueError:
       pass
 
-string = 'param Z3 :'
-for i in range(size): string = string + ' ' + str(i + 1)
-string = string + ' :='
+string = 'param ' + variable + ' :='
 print(string)
 
 line = 1
