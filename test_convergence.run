@@ -17,5 +17,7 @@ data weight/ampl_weight_3.dat ;
 data weight/ampl_weight_4.dat ;
 option solver "/home/aheirich/bin/ampl.linux64/knitro" ;
 option knitro_options 'outlev=3';
+option presolve 0 ;
+option show_stats 1 ;
 solve ;
 
