@@ -122,66 +122,6 @@ subject to activation2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
 a2[i, j, k] = z2[i, j, k] * (1 / (1 + exp(-10000.0 * z2[i, j, k])))
 + (1 - (1 / (1 + exp(-10000.0 * z2[i, j, k])))) * leakiness * z2[i, j, k];
 
-
-
-# layer 3 is a layer of 16 leaky Relus, it is preceded by a flattened version of layer 2
-param columns_3 := 16;
-
-param bias_3{i in 1..columns_3};
-
-# activations
-var a3{i in 1..columns_3};
-
-# preactivations
-var z3{i in 1..columns_3};
-
-# range constraints
-#subject to rangemax3{i in 1..columns_3}:
-#z3[i] <= 100;
-#subject to rangemin3{i in 1..columns_3}:
-#z3[i] >= -100;
-
-
-param totalUnitsLayer2 := rows_2 * columns_2 * depth_2;
-param weight_3{i in 1..totalUnitsLayer2, j in 1..columns_3};
-
-
-subject to preactivation3{l in 1..columns_3, i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
-z3[l] = bias_3[l] + a2[i, j, k] * weight_3[i * columns_2 * depth_2 + j * depth_2 + k, l];
-
-
-# compute activations with leaky Relu
-subject to activation3{i in 1..columns_3}:
-a3[i] = z3[i] * (1 / (1 + exp(-10000.0 * z3[i])))
-+ (1 - (1 / (1 + exp(-10000.0 * z3[i])))) * leakiness * z3[i];
-
-
-# layer 4 is a single output neuron
-param columns_4 := 1;
-
-param bias_4{i in 1..columns_4};
-
-# activation
-var a4{i in 1..columns_4};
-
-# preactivation
-var z4{i in 1..columns_4};
-
-# range constraints
-#subject to rangemax4{i in 1..columns_4}:
-#z4[i] <= 100;
-#subject to rangemin4{i in 1..columns_4}:
-#z4[i] >= -100;
-
-param weight_4{i in 1..columns_4};
-
-subject to preactivation4{i in 1..columns_3, j in 1..columns_4}:
-z4[j] = bias_4[j] + z3[i] * weight_4[i];
-
-subject to activation4{i in 1..columns_4}:
-a4[i] = 1.0 / (1.0 + exp(-z4[i]));
-
-
 ### activation targets
 
 var x_{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0};
@@ -189,10 +129,6 @@ var z1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
 var a1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
 var a2_{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2};
 var z2_{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2};
-var a3_{i in 1..columns_3};
-var z3_{i in 1..columns_3};
-var a4_{i in 1..columns_4};
-var z4_{i in 1..columns_4};
 
 subject to xValue{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0}:
 x[i, j, k] = x_[i, j, k];
@@ -209,13 +145,5 @@ a2[i, j, k] = a2_[i, j, k];
 subject to z2Value{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
 z2[i, j, k] = z2_[i, j, k];
 
-subject to a3Value{i in 1..columns_3}:
-a3[i] = a3_[i];
-
-subject to z3Value{i in 1..columns_3}:
-z3[i] = z3_[i];
-
-subject to z4Value{i in 1..columns_4}:
-a4[i] = a4_[i];
 
 
