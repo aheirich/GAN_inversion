@@ -22,7 +22,7 @@ var x{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_wid
 #x[i, j, k] >= -100;
 
 # objective makes x match
-minimize discrepency: sum(i in 2..row_0, j in 1..columns_0) (x[i + padding_height_0, j + padding_width_0, 2] - x[1 + padding_height_0, j + padding_width_0, 2])^2;
+minimize discrepency: sum{i in 2..rows_0, j in 1..columns_0} (x[i + padding_height_0, j + padding_width_0, 2] - x[1 + padding_height_0, j + padding_width_0, 2])^2;
 
 # layer 1 is 50x50x16 convolutional layer
 # each convolution filter is 3x8x2 with stride of 2,2
