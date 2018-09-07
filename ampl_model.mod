@@ -1,8 +1,4 @@
 
-# need to pad the input images and the first intermediate layer
-# TODO provide input_constraint as a .dat file with padding
-# TODO what is the value of the leakiness parameter from the model?
-
 # input layer 0 is two 100x100 input arrays (10,000 each)
 # first input array should be constrained to known values
 # second input array is what we want the network to supply
@@ -22,7 +18,7 @@ var x{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_wid
 #x[i, j, k] >= -100;
 
 # objective makes x match
-minimize discrepency: sum(i in 2..row_0, j in 1..columns_0) (x[i + padding_height_0, j + padding_width_0, 2] - x[1 + padding_height_0, j + padding_width_0, 2])^2;
+minimize discrepency: sum{i in 2..rows_0, j in 1..columns_0} (x[i + padding_height_0, j + padding_width_0, 2] - x[1 + padding_height_0, j + padding_width_0, 2])^2;
 
 # layer 1 is 50x50x16 convolutional layer
 # each convolution filter is 3x8x2 with stride of 2,2
@@ -58,8 +54,8 @@ var z1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
 
 param weight_1{i in 1..filter_height_1, j in 1..filter_width_1, l in 1..filter_depth_1, k in 1..depth_1};
 
-subject to preactivation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1, l in 1..filter_height_1, m in 1..filter_width_1, n in 1..filter_depth_1}:
-z1[i, j, k] = bias_1[k] + weight_1[l, m, n, k] * x[i + l - 1, j + m - 1, n];
+subject to preactivation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+z1[i, j, k] = bias_1[k] * sum{l in 1..filter_height_1, m in 1..filter_width_1, n in 1..filter_depth_1} weight_1[l, m, n, k] * x[i + l - 1, j + m - 1, n];
 
 
 
@@ -114,8 +110,8 @@ var z2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2};
 
 param weight_2{i in 1..filter_height_2, j in 1..filter_width_2, k in 1..filter_depth_2, l in 1..depth_2};
 
-subject to preactivation2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2, l in 1..filter_height_2, m in 1..filter_width_2, n in 1..filter_depth_2, o in 1..depth_1}:
-z2[i, j, k] = bias_2[k] + weight_2[l, m, n, k] * a1[i + padding_height_1, j + padding_width_1, o];
+subject to preactivation2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
+z2[i, j, k] = bias_2[k] + sum{l in 1..filter_height_2, m in 1..filter_width_2, n in 1..filter_depth_2, o in 1..depth_1} weight_2[l, m, n, k] * a1[i + padding_height_1, j + padding_width_1, o];
 
 # compute activations with leaky Relu
 subject to activation2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
@@ -146,8 +142,8 @@ param totalUnitsLayer2 := rows_2 * columns_2 * depth_2;
 param weight_3{i in 1..totalUnitsLayer2, j in 1..columns_3};
 
 
-subject to preactivation3{l in 1..columns_3, i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
-z3[l] = bias_3[l] + a2[i, j, k] * weight_3[i * columns_2 * depth_2 + j * depth_2 + k, l];
+subject to preactivation3{l in 1..columns_3}:
+z3[l] = bias_3[l] + sum{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2} a2[i, j, k] * weight_3[i * columns_2 * depth_2 + j * depth_2 + k, l];
 
 
 # compute activations with leaky Relu
@@ -175,8 +171,8 @@ var z4{i in 1..columns_4};
 
 param weight_4{i in 1..columns_4};
 
-subject to preactivation4{i in 1..columns_3, j in 1..columns_4}:
-z4[j] = bias_4[j] + z3[i] * weight_4[i];
+subject to preactivation4{i in 1..columns_4}:
+z4[i] = bias_4[i] + sum{j in 1..columns_3} z3[j] * weight_4[j];
 
 subject to activation4{i in 1..columns_4}:
 a4[i] = 1.0 / (1.0 + exp(-z4[i]));
