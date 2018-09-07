@@ -58,8 +58,11 @@ var z1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
 
 param weight_1{i in 1..filter_height_1, j in 1..filter_width_1, l in 1..filter_depth_1, k in 1..depth_1};
 
-subject to preactivation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1, l in 1..filter_height_1, m in 1..filter_width_1, n in 1..filter_depth_1}:
-z1[i, j, k] = bias_1[k] + weight_1[l, m, n, k] * x[i + l - 1, j + m - 1, n];
+#subject to preactivation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1, l in 1..filter_height_1, m in 1..filter_width_1, n in 1..filter_depth_1}:
+#z1[i, j, k] = bias_1[k] + weight_1[l, m, n, k] * x[i + l - 1, j + m - 1, n];
+
+subject to preactivation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+z1[i, j, k] = bias_1[k] * sum{l in 1..filter_height_1, m in 1..filter_width_1, n in 1..filter_depth_1} weight_1[l, m, n, k] * x[i + l - 1, j + m - 1, n];
 
 
 
@@ -114,8 +117,11 @@ var z2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2};
 
 param weight_2{i in 1..filter_height_2, j in 1..filter_width_2, k in 1..filter_depth_2, l in 1..depth_2};
 
-subject to preactivation2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2, l in 1..filter_height_2, m in 1..filter_width_2, n in 1..filter_depth_2, o in 1..depth_1}:
-z2[i, j, k] = bias_2[k] + weight_2[l, m, n, k] * a1[i + padding_height_1, j + padding_width_1, o];
+#subject to preactivation2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2, l in 1..filter_height_2, m in 1..filter_width_2, n in 1..filter_depth_2, o in 1..depth_1}:
+#z2[i, j, k] = bias_2[k] + weight_2[l, m, n, k] * a1[i + padding_height_1, j + padding_width_1, o];
+
+subject to preactivation2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
+z2[i, j, k] = bias_2[k] + sum{l in 1..filter_height_2, m in 1..filter_width_2, n in 1..filter_depth_2, o in 1..depth_1} weight_2[l, m, n, k] * a1[i + padding_height_1, j + padding_width_1, o];
 
 # compute activations with leaky Relu
 subject to activation2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
