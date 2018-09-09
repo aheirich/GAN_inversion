@@ -163,8 +163,6 @@ var a2_{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2};
 var z2_{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2};
 var a3_{i in 1..columns_3};
 var z3_{i in 1..columns_3};
-var a4_{i in 1..columns_4};
-var z4_{i in 1..columns_4};
 
 subject to xValue{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0}:
 x[i, j, k] = x_[i, j, k];
