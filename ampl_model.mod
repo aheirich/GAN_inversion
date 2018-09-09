@@ -143,7 +143,7 @@ param weight_3{i in 1..totalUnitsLayer2, j in 1..columns_3};
 
 
 subject to preactivation3{l in 1..columns_3}:
-z3[l] = bias_3[l] + sum{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2} a2[i, j, k] * weight_3[i * columns_2 * depth_2 + j * depth_2 + k, l];
+z3[l] = bias_3[l] + sum{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2} a2[i, j, k] * weight_3[(i - 1) * columns_2 * depth_2 + (j - 1) * depth_2 + k, l];
 
 
 # compute activations with leaky Relu
@@ -169,7 +169,7 @@ var z4{i in 1..columns_4};
 #subject to rangemin4{i in 1..columns_4}:
 #z4[i] >= -100;
 
-param weight_4{i in 1..columns_4};
+param weight_4{i in 1..columns_3};
 
 subject to preactivation4{i in 1..columns_4}:
 z4[i] = bias_4[i] + sum{j in 1..columns_3} z3[j] * weight_4[j];
