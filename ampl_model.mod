@@ -55,7 +55,7 @@ var z1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
 param weight_1{i in 1..filter_height_1, j in 1..filter_width_1, l in 1..filter_depth_1, k in 1..depth_1};
 
 subject to preactivation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-z1[i, j, k] = bias_1[k] * sum{l in 1..filter_height_1, m in 1..filter_width_1, n in 1..filter_depth_1} weight_1[l, m, n, k] * x[i + l - 1, j + m - 1, n];
+z1[i, j, k] = bias_1[k] * sum{l in 1..filter_height_1, m in 1..filter_width_1, n in 1..filter_depth_1} weight_1[l, m, n, k] * x[i + l - 1 + padding_height_0, j + m - 1 + padding_width_0, n];
 
 
 

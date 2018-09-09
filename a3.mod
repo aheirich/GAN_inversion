@@ -81,11 +81,90 @@ a1[i + padding_height_0, j + padding_width_0 + columns_1, k] = 0;
 
 
 
+# layer 2 is 25x25x32 convolutional layer
+# each convolution filter is 8x3x2
+# there are 32 filters
+
+# layer-2
+param rows_2 := 25;
+param columns_2 := 25;
+param depth_2 := 32;
+
+param filter_height_2 := 8;
+param filter_width_2 := 3;
+param filter_depth_2 := 16;
+
+param bias_2{i in 1..depth_2};
+
+# activations
+var a2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2};
+
+# preactivations
+var z2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2};
+
+# range constraints
+#subject to rangemax2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
+#z2[i, j, k] <= 100;
+#subject to rangemin2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
+#z2[i, j, k] >= -100;
+
+param weight_2{i in 1..filter_height_2, j in 1..filter_width_2, k in 1..filter_depth_2, l in 1..depth_2};
+
+subject to preactivation2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
+z2[i, j, k] = bias_2[k] + sum{l in 1..filter_height_2, m in 1..filter_width_2, n in 1..filter_depth_2, o in 1..depth_1} weight_2[l, m, n, k] * a1[i + padding_height_1, j + padding_width_1, o];
+
+# compute activations with leaky Relu
+subject to activation2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
+a2[i, j, k] = z2[i, j, k] * (1 / (1 + exp(-10000.0 * z2[i, j, k])))
++ (1 - (1 / (1 + exp(-10000.0 * z2[i, j, k])))) * leakiness * z2[i, j, k];
+
+
+
+# layer 3 is a layer of 16 leaky Relus, it is preceded by a flattened version of layer 2
+param columns_3 := 16;
+
+param bias_3{i in 1..columns_3};
+
+# activations
+var a3{i in 1..columns_3};
+
+# preactivations
+var z3{i in 1..columns_3};
+
+# range constraints
+#subject to rangemax3{i in 1..columns_3}:
+#z3[i] <= 100;
+#subject to rangemin3{i in 1..columns_3}:
+#z3[i] >= -100;
+
+
+param totalUnitsLayer2 := rows_2 * columns_2 * depth_2;
+param weight_3{i in 1..totalUnitsLayer2, j in 1..columns_3};
+
+
+subject to preactivation3{l in 1..columns_3}:
+z3[l] = bias_3[l] + sum{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2} a2[i, j, k] * weight_3[(i - 1) * columns_2 * depth_2 + (j - 1) * depth_2 + k, l];
+
+
+# compute activations with leaky Relu
+subject to activation3{i in 1..columns_3}:
+a3[i] = z3[i] * (1 / (1 + exp(-10000.0 * z3[i])))
++ (1 - (1 / (1 + exp(-10000.0 * z3[i])))) * leakiness * z3[i];
+
+
+
+
 ### activation targets
 
 var x_{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0};
 var z1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
 var a1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
+var a2_{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2};
+var z2_{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2};
+var a3_{i in 1..columns_3};
+var z3_{i in 1..columns_3};
+var a4_{i in 1..columns_4};
+var z4_{i in 1..columns_4};
 
 subject to xValue{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0}:
 x[i, j, k] = x_[i, j, k];
@@ -95,5 +174,17 @@ z1[i, j, k] = z1_[i, j, k];
 
 subject to a1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
 a1[i + padding_height_1, j + padding_width_1, k] = a1_[i, j, k];
+
+subject to a2Value{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
+a2[i, j, k] = a2_[i, j, k];
+
+subject to z2Value{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
+z2[i, j, k] = z2_[i, j, k];
+
+subject to a3Value{i in 1..columns_3}:
+a3[i] = a3_[i];
+
+subject to z3Value{i in 1..columns_3}:
+z3[i] = z3_[i];
 
 
