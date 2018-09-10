@@ -7,8 +7,8 @@ param rows_0 := 100;
 param columns_0 := 100;
 param depth_0 := 2;
 
-param padding_height_0 := 4;
-param padding_width_0 := 2;
+param padding_height_0 := 5;
+param padding_width_0 := 5;
 
 # inputs
 var x{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0};
@@ -35,8 +35,11 @@ param filter_height_1 := 3;
 param filter_width_1 := 8;
 param filter_depth_1 := 2;
 
-param padding_height_1 := 4;
-param padding_width_1 := 2;
+param filter_height_1_half = 1;
+param filter_width_1_half = 4;
+
+param padding_height_1 := 5;
+param padding_width_1 := 5;
 
 param bias_1{i in 1..depth_1};
 
@@ -55,7 +58,13 @@ var z1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
 param weight_1{i in 1..filter_height_1, j in 1..filter_width_1, l in 1..filter_depth_1, k in 1..depth_1};
 
 subject to preactivation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-z1[i, j, k] = bias_1[k] * sum{l in 1..filter_height_1, m in 1..filter_width_1, n in 1..filter_depth_1} weight_1[l, m, n, k] * x[i + l - 1 + padding_height_0, j + m - 1 + padding_width_0, n];
+z1[i, j, k] = bias_1[k] * sum{l in 1..filter_height_1, m in 1..filter_width_1, n in 1..filter_depth_1}
+weight_1[l, m, n, k] *
+x[padding_height_0 + ((i - 1) * 2) + 1 + l - filter_height_1_half,
+  padding_width_0 + ((j - 1) * 2) + 1 + m - filter_width_1_half,
+n];
+
+
 
 
 
@@ -69,14 +78,16 @@ a1[i + padding_height_1, j + padding_width_1, k] = z1[i, j, k] * (1 / (1 + exp(-
 + (1 - (1 / (1 + exp(-10000.0 * z1[i, j, k])))) * leakiness * z1[i, j, k];
 
 # zero padding for a1
-subject to zeropad1_1{i in 1..padding_height_0, j in 1..columns_1, k in 1..depth_1}:
+subject to zeropad1_1{i in 1..padding_height_1, j in 1..columns_1, k in 1..depth_1}:
 a1[i, j, k] = 0;
-subject to zeropad1_2{i in 1..padding_height_0, j in 1..columns_1, k in 1..depth_1}:
-a1[i + padding_height_0 + rows_1, j, k] = 0;
-subject to zeropad1_3{i in 1..rows_1, j in 1..padding_width_0, k in 1..depth_1}:
-a1[i + padding_height_0, j, k] = 0;
-subject to zeropad1_4{i in 1..rows_1, j in 1..padding_width_0, k in 1..depth_1}:
-a1[i + padding_height_0, j + padding_width_0 + columns_1, k] = 0;
+subject to zeropad1_2{i in 1..padding_height_1, j in 1..columns_1, k in 1..depth_1}:
+a1[i + padding_height_1 + rows_1, j, k] = 0;
+subject to zeropad1_3{i in 1..rows_1, j in 1..padding_width_1, k in 1..depth_1}:
+a1[i + padding_height_1, j, k] = 0;
+subject to zeropad1_4{i in 1..rows_1, j in 1..padding_width_1, k in 1..depth_1}:
+a1[i + padding_height_1, j + padding_width_1 + columns_1, k] = 0;
+
+
 
 
 
@@ -95,5 +106,3 @@ z1[i, j, k] = z1_[i, j, k];
 
 subject to a1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
 a1[i + padding_height_1, j + padding_width_1, k] = a1_[i, j, k];
-
-
