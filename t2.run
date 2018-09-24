@@ -8,7 +8,7 @@ data weight/ampl_bias_1.dat ;
 data weight/ampl_bias_2.dat ;
 data weight/ampl_weight_1.dat ;
 data weight/ampl_weight_2.dat ;
-option solver "/home/aheirich/bin/amplide.linux64/knitro" ;
+option solver "/home/users/aheirich/amplide.linux64/knitro" ;
 option knitro_options 'outlev=3';
 option presolve 0 ;
 option show_stats 1 ;
