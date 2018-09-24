@@ -171,44 +171,54 @@ z4[i] = bias_4[i] + sum{j in 1..columns_3} z3[j] * weight_4[j];
 subject to activation4{i in 1..columns_4}:
 a4[i] = 1.0 / (1.0 + exp(-z4[i]));
 
+### output variable
 
+var a4_{i in 1..columns_4};
+subject to outputConstraint{i in 1..columns4}:
+a4[i] = a4_[i];
+
+### input variable, clamp x[.,.,1], leave x[.,.,2] free this is the answer we seek
+
+var x_{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0};
+subject to xValue{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0}:
+x[i, j, 1] = x_[i, j, 1];
 
 
 ### activation targets
 
-var x_{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0};
-var z1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
-var a1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
-var a2_{i in 1..totalUnitsLayer2};
-var z2_{i in 1..totalUnitsLayer2};
-var a3_{i in 1..columns_3};
-var z3_{i in 1..columns_3};
-var a4_{i in 1..columns_4};
-var z4_{i in 1..columns_4};
+###var x_{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0};
+###var z1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
+###var a1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
+###var a2_{i in 1..totalUnitsLayer2};
+###var z2_{i in 1..totalUnitsLayer2};
+###var a3_{i in 1..columns_3};
+###var z3_{i in 1..columns_3};
+###var a4_{i in 1..columns_4};
+###var z4_{i in 1..columns_4};
 
 
-subject to xValue{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0}:
-x[i, j, k] = x_[i, j, k];
+###subject to xValue{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0}:
+###x[i, j, k] = x_[i, j, k];
 
-subject to z1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-z1[i, j, k] = z1_[i, j, k];
+###subject to z1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+###z1[i, j, k] = z1_[i, j, k];
 
-subject to a1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-a1[i + padding_height_1, j + padding_width_1, k] = a1_[i, j, k];
+###subject to a1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+###a1[i + padding_height_1, j + padding_width_1, k] = a1_[i, j, k];
 
-subject to a2Value{i in 1..totalUnitsLayer2}:
-a2[i] = a2_[i];
+###subject to a2Value{i in 1..totalUnitsLayer2}:
+###a2[i] = a2_[i];
 
-subject to z2Value{i in 1..totalUnitsLayer2}:
-z2[i] = z2_[i];
+###subject to z2Value{i in 1..totalUnitsLayer2}:
+###z2[i] = z2_[i];
 
-subject to a3Value{i in 1..columns_3}:
-a3[i] = a3_[i];
+###subject to a3Value{i in 1..columns_3}:
+###a3[i] = a3_[i];
 
-subject to z3Value{i in 1..columns_3}:
-z3[i] = z3_[i];
+###subject to z3Value{i in 1..columns_3}:
+###z3[i] = z3_[i];
 
-subject to z4Value{i in 1..columns_4}:
-a4[i] = a4_[i];
+###subject to z4Value{i in 1..columns_4}:
+###a4[i] = a4_[i];
 
 

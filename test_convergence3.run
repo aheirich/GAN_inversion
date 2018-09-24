@@ -6,7 +6,7 @@ data real_example/real3/Z2.dat ;
 data real_example/real3/A2.dat ;
 data real_example/real3/Z3.dat ;
 data real_example/real3/A3.dat ;
-data real_example/real3/Z4.dat ;
+data real_example/real3/A4.dat ;
 data weight/ampl_bias_1.dat ;
 data weight/ampl_bias_2.dat ;
 data weight/ampl_bias_3.dat ;

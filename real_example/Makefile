@@ -5,9 +5,9 @@ Z2=real1/Z2.dat real2/Z2.dat real3/Z2.dat real4/Z2.dat real5/Z2.dat
 A2=real1/A2.dat real2/A2.dat real3/A2.dat real4/A2.dat real5/A2.dat
 Z3=real1/Z3.dat real2/Z3.dat real3/Z3.dat real4/Z3.dat real5/Z3.dat
 A3=real1/A3.dat real2/A3.dat real3/A3.dat real4/A3.dat real5/A3.dat
-Z4=real1/Z4.dat real2/Z4.dat real3/Z4.dat real4/Z4.dat real5/Z4.dat
+A4=real1/A4.dat real2/A4.dat real3/A4.dat real4/A4.dat real5/A4.dat
 
-ALL=$(X) $(Z1) $(A1) $(Z2) $(A2) $(Z3) $(A3) $(Z4)
+ALL=$(X) $(Z1) $(A1) $(Z2) $(A2) $(Z3) $(A3) $(A4)
 
 all:	$(ALL)
 
@@ -121,18 +121,18 @@ real4/A3.dat:	real4/8.output\ of\ fc1\ after\ activation.txt ../python/convert_p
 real5/A3.dat:	real5/8.output\ of\ fc1\ after\ activation.txt ../python/convert_preactivation_3.py
 	python3 ../python/convert_preactivation_3.py real5/8.output\ of\ fc1\ after\ activation.txt a3_ > $@
 
-real1/Z4.dat:	real1/9.output\ of\ fc2\ ==\ final\ single\ output.txt ../python/convert_preactivation_4.py
+real1/A4.dat:	real1/9.output\ of\ fc2\ ==\ final\ single\ output.txt ../python/convert_preactivation_4.py
 	python3 ../python/convert_preactivation_4.py real1/9.output\ of\ fc2\ ==\ final\ single\ output.txt  > $@
 
-real2/Z4.dat:	real2/9.output\ of\ fc2\ ==\ final\ single\ output.txt ../python/convert_preactivation_4.py
+real2/A4.dat:	real2/9.output\ of\ fc2\ ==\ final\ single\ output.txt ../python/convert_preactivation_4.py
 	python3 ../python/convert_preactivation_4.py real2/9.output\ of\ fc2\ ==\ final\ single\ output.txt  > $@
 
-real3/Z4.dat:	real3/9.output\ of\ fc2\ ==\ final\ single\ output.txt ../python/convert_preactivation_4.py
+real3/A4.dat:	real3/9.output\ of\ fc2\ ==\ final\ single\ output.txt ../python/convert_preactivation_4.py
 	python3 ../python/convert_preactivation_4.py real3/9.output\ of\ fc2\ ==\ final\ single\ output.txt  > $@
 
-real4/Z4.dat:	real4/9.output\ of\ fc2\ ==\ final\ single\ output.txt ../python/convert_preactivation_4.py
+real4/A4.dat:	real4/9.output\ of\ fc2\ ==\ final\ single\ output.txt ../python/convert_preactivation_4.py
 	python3 ../python/convert_preactivation_4.py real4/9.output\ of\ fc2\ ==\ final\ single\ output.txt  > $@
 
-real5/Z4.dat:	real5/9.output\ of\ fc2\ ==\ final\ single\ output.txt ../python/convert_preactivation_4.py
+real5/A4.dat:	real5/9.output\ of\ fc2\ ==\ final\ single\ output.txt ../python/convert_preactivation_4.py
 	python3 ../python/convert_preactivation_4.py real5/9.output\ of\ fc2\ ==\ final\ single\ output.txt  > $@
 
