@@ -106,23 +106,19 @@ param filter_width_2_half := 1;
 param bias_2{i in 1..depth_2};
 
 # activations
-var a2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2};
+var a2{i in 1..rows_2 * columns_2 * depth_2};
 
 # preactivations
-var z2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2};
+var z2{i in 1..rows_2 * columns_2 * depth_2};
 
-# range constraints
-#subject to rangemax2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
-#z2[i, j, k] <= 100;
-#subject to rangemin2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
-#z2[i, j, k] >= -100;
 
 param weight_2{i in 1..filter_height_2, j in 1..filter_width_2, k in 1..filter_depth_2, l in 1..depth_2};
 
 
+param totalUnitsLayer2 := rows_2 * columns_2 * depth_2;
 
 subject to preactivation2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
-z2[i, j, k] = bias_2[k] *
+z2[(i - 1) * columns_2 * depth2 + (j - 1) * depth2 + k] = bias_2[k] *
 sum{l in 1..filter_height_2, m in 1..filter_width_2, n in 1..filter_depth_2, o in 1..depth_1}
 weight_2[l, m, n, k] *
 a1[padding_height_1 + ((i - 1) * 2) + 1 + l - filter_height_2_half,
@@ -132,9 +128,9 @@ o];
 
 
 # compute activations with leaky Relu
-subject to activation2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
-a2[i, j, k] = z2[i, j, k] * (1 / (1 + exp(-10000.0 * z2[i, j, k])))
-+ (1 - (1 / (1 + exp(-10000.0 * z2[i, j, k])))) * leakiness * z2[i, j, k];
+subject to activation2{i in 1..totalUnitsLayer2}:
+a2[i] = z2[i] * (1 / (1 + exp(-10000.0 * z2[i])))
++ (1 - (1 / (1 + exp(-10000.0 * z2[i])))) * leakiness * z2[i];
 
 
 
@@ -151,19 +147,12 @@ var a3{i in 1..columns_3};
 # preactivations
 var z3{i in 1..columns_3};
 
-# range constraints
-#subject to rangemax3{i in 1..columns_3}:
-#z3[i] <= 100;
-#subject to rangemin3{i in 1..columns_3}:
-#z3[i] >= -100;
 
-
-param totalUnitsLayer2 := rows_2 * columns_2 * depth_2;
 param weight_3{i in 1..totalUnitsLayer2, j in 1..columns_3};
 
 
 subject to preactivation3{l in 1..columns_3}:
-z3[l] = bias_3[l] + sum{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2} a2[i, j, k] * weight_3[(i - 1) * columns_2 * depth_2 + (j - 1) * depth_2 + k, l];
+z3[l] = bias_3[l] + sum{i in 1..totalUnitsLayer2} a2[i] * weight_3[i, l];
 
 
 # compute activations with leaky Relu
