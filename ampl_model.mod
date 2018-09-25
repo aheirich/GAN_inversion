@@ -174,7 +174,7 @@ a4[i] = 1.0 / (1.0 + exp(-z4[i]));
 ### output variable
 
 var a4_{i in 1..columns_4};
-subject to outputConstraint{i in 1..columns4}:
+subject to outputConstraint{i in 1..columns_4}:
 a4[i] = a4_[i];
 
 ### input variable, clamp x[.,.,1], leave x[.,.,2] free this is the answer we seek

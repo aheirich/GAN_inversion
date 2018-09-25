@@ -1,6 +1,6 @@
 model ampl_model.mod ;
-data real_example/real1/X.dat ;
-data real_example/real1/A4.dat ;
+data real_example/real4/X.dat ;
+data real_example/real4/A4.dat ;
 data weight/ampl_bias_1.dat ;
 data weight/ampl_bias_2.dat ;
 data weight/ampl_bias_3.dat ;
