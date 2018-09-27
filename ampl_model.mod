@@ -13,8 +13,30 @@ param padding_width_0 := 5;
 # inputs
 var x{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0};
 
-# objective makes x match
-minimize discrepency: sum{i in 2..rows_0, j in 1..columns_0} (x[i + padding_height_0, j + padding_width_0, 2] - x[1 + padding_height_0, j + padding_width_0, 2])^2;
+### output variable
+
+# layer 4 is a single output neuron
+param columns_4 := 1;
+# activation
+var a4{i in 1..columns_4};
+param  a4_{i in 1..columns_4};
+subject to outputConstraint{i in 1..columns_4}:
+a4[i] = a4_[i];
+
+### input variable, clamp x[.,.,1], leave x[.,.,2] free this is the answer we seek
+
+param x_{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0};
+subject to xValue{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0}:
+x[i, j, 1] = x_[i, j, 1];
+
+# objective makes x[,,1] match expected input, x[,,2] match itself, and a4 match expected output value
+minimize discrepency: 
+sum{i in 2..rows_0, j in 1..columns_0} (x[i + padding_height_0, j + padding_width_0, 2] - x[1 + padding_height_0, j + padding_width_0, 2])^2
++
+sum{i in 1..rows_0, j in 1..columns_0} (x[i + padding_height_0, j + padding_width_0, 1] - x_[i + padding_height_0, j + padding_width_0, 1])^2
++
+sum{i in 1..columns_4} (a4[i] - a4_[i])^2
+;
 
 # layer 1 is 50x50x16 convolutional layer
 # each convolution filter is 3x8x2 with stride of 2,2
@@ -37,6 +59,9 @@ param filter_width_1_half = 4;
 param padding_height_1 := 5;
 param padding_width_1 := 5;
 
+param row_1_base := 5;
+param column_1_base := 2;
+
 param bias_1{i in 1..depth_1};
 
 # activations
@@ -48,11 +73,16 @@ var z1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
 param weight_1{i in 1..filter_height_1, j in 1..filter_width_1, l in 1..filter_depth_1, k in 1..depth_1};
 
 subject to preactivation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-z1[i, j, k] = bias_1[k] * sum{l in 1..filter_height_1, m in 1..filter_width_1, n in 1..filter_depth_1}
-weight_1[l, m, n, k] *
-x[padding_height_0 + ((i - 1) * 2) + 1 + l - filter_height_1_half,
-padding_width_0 + ((j - 1) * 2) + 1 + m - filter_width_1_half,
-n];
+ z1[i, j, k] = bias_1[k] * sum{l in 1..filter_height_1, m in 1..filter_width_1, n in 1..filter_depth_1}
+ weight_1[l, m, n, k] *
+ x[row_1_base + ((i - 1) * 2) + 1 + l, column_1_base + ((j - 1) * 2) + 1 + m,
+ n];
+
+
+
+
+
+
 
 
 
@@ -152,13 +182,9 @@ a3[i] = z3[i] * (1 / (1 + exp(-10000.0 * z3[i])))
 + (1 - (1 / (1 + exp(-10000.0 * z3[i])))) * leakiness * z3[i];
 
 
-# layer 4 is a single output neuron
-param columns_4 := 1;
 
 param bias_4{i in 1..columns_4};
 
-# activation
-var a4{i in 1..columns_4};
 
 # preactivation
 var z4{i in 1..columns_4};
@@ -171,54 +197,32 @@ z4[i] = bias_4[i] + sum{j in 1..columns_3} z3[j] * weight_4[j];
 subject to activation4{i in 1..columns_4}:
 a4[i] = 1.0 / (1.0 + exp(-z4[i]));
 
-### output variable
 
-var a4_{i in 1..columns_4};
-subject to outputConstraint{i in 1..columns_4}:
-a4[i] = a4_[i];
+### activation targets, use this to verify the model with a known fixed point (Remove after verification)
 
-### input variable, clamp x[.,.,1], leave x[.,.,2] free this is the answer we seek
-
-var x_{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0};
-subject to xValue{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0}:
-x[i, j, 1] = x_[i, j, 1];
+param z1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
+param a1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
+param a2_{i in 1..totalUnitsLayer2};
+param z2_{i in 1..totalUnitsLayer2};
+param a3_{i in 1..columns_3};
+param z3_{i in 1..columns_3};
 
 
-### activation targets
+subject to z1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+z1[i, j, k] = z1_[i, j, k];
 
-###var x_{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0};
-###var z1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
-###var a1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
-###var a2_{i in 1..totalUnitsLayer2};
-###var z2_{i in 1..totalUnitsLayer2};
-###var a3_{i in 1..columns_3};
-###var z3_{i in 1..columns_3};
-###var a4_{i in 1..columns_4};
-###var z4_{i in 1..columns_4};
+subject to a1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+a1[i + padding_height_1, j + padding_width_1, k] = a1_[i, j, k];
 
+subject to a2Value{i in 1..totalUnitsLayer2}:
+a2[i] = a2_[i];
 
-###subject to xValue{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0}:
-###x[i, j, k] = x_[i, j, k];
+subject to z2Value{i in 1..totalUnitsLayer2}:
+z2[i] = z2_[i];
 
-###subject to z1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-###z1[i, j, k] = z1_[i, j, k];
+subject to a3Value{i in 1..columns_3}:
+a3[i] = a3_[i];
 
-###subject to a1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-###a1[i + padding_height_1, j + padding_width_1, k] = a1_[i, j, k];
-
-###subject to a2Value{i in 1..totalUnitsLayer2}:
-###a2[i] = a2_[i];
-
-###subject to z2Value{i in 1..totalUnitsLayer2}:
-###z2[i] = z2_[i];
-
-###subject to a3Value{i in 1..columns_3}:
-###a3[i] = a3_[i];
-
-###subject to z3Value{i in 1..columns_3}:
-###z3[i] = z3_[i];
-
-###subject to z4Value{i in 1..columns_4}:
-###a4[i] = a4_[i];
-
+subject to z3Value{i in 1..columns_3}:
+z3[i] = z3_[i];
 

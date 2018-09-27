@@ -21,7 +21,6 @@ for line in file:
       pass
     
 
-# must match ampl model parameters padding_height_0, padding_width_0
 padding_height = 5
 padding_width = 5
 
