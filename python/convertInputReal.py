@@ -21,8 +21,9 @@ for line in file:
       pass
     
 
-padding_height = 4
-padding_width = 2
+# must match ampl model padding_height_0, padding_width_0
+padding_height = 5
+padding_width = 5
 
 assert len(data[0]) == width * height
 assert len(data[1]) == width * height

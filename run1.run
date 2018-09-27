@@ -1,4 +1,5 @@
 model ampl_model.mod ;
+data initializeRandom.dat ;
 data real_example/real1/X.dat ;
 data real_example/real1/A4.dat ;
 data weight/ampl_bias_1.dat ;
@@ -10,8 +11,10 @@ data weight/ampl_weight_2.dat ;
 data weight/ampl_weight_3.dat ;
 data weight/ampl_weight_4.dat ;
 option solver "/home/users/aheirich/amplide.linux64/knitro" ;
-option knitro_options 'outlev=6';
+option knitro_options 'outlev=3';
 option presolve 0 ;
 option show_stats 1 ;
 solve ;
 display x;
+display a4;
+display a4_;
