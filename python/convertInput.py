@@ -11,8 +11,9 @@ for line in file:
     values.append(float(word))
   data.append(values)
 
-padding_height = 4
-padding_width = 2
+### these must match the ampl model parameters padding_height_0 and padding_width_0
+padding_height = 5
+padding_width = 5
 
 feature = data[:-1]
 label = data[-1]

@@ -31,33 +31,40 @@ assert len(data[1]) == width * height
 def printLayer(z):
   effectiveWidth = width + 2 * padding_width
 
-  string = '[*,*,' + str(z + 1) + '] : '
-  for i in range(effectiveWidth): string = string + str(i + 1) + ' '
-  string = string + ':='
-  print(string)
+#  string = '[*,*,' + str(z + 1) + '] : '
+#  for i in range(effectiveWidth): string = string + str(i + 1) + ' '
+#  string = string + ':='
+#  print(string)
 
   for i in range(padding_height):
-    string = str(i + 1)
-    for j in range(effectiveWidth): string = string + ' 0'
-    print(string)
+    string = ''
+    for j in range(effectiveWidth - 1): string = string + ' 0,'
+    string = string + ' 0'
+    print('[' + string + '],')
 
   index = 0
   for i in range(height):
-    string = str(i + 1 + padding_height)
-    for j in range(padding_width): string = string + ' 0'
+#    string = str(i + 1 + padding_height)
+    string = ''
+    for j in range(padding_width): string = string + ' 0,'
     for j in range(width):
-      string = string + ' ' + str(data[z][index])
+      string = string + ' ' + str(data[z][index]) + ', '
       index = index + 1
-    for j in range(padding_width): string = string + ' 0'
-    print(string)
+    for j in range(padding_width - 1): string = string + ' 0,'
+    string = string + ' 0'
+    print('[' + string + '],')
 
   for i in range(padding_height):
-    string = str(i + 1 + height + padding_height)
-    for j in range(effectiveWidth): string = string + ' 0'
-    print(string)
+    string = ''
+    for j in range(effectiveWidth - 1): string = string + ' 0,'
+    string = string + ' 0'
+    print('[' + string + '5')
 
-print('param x_ :=')
+print('x = [')
+print('[')
 printLayer(0)
+print('],')
+print('[')
 printLayer(1)
-print(';\n')
+print(']]')
 

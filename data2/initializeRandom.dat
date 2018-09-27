@@ -1,9 +1,11 @@
-param a1{i in 1..rows_1 + 2 * padding_height_1, j in 1..columns_1 + 2 * padding_width_1, k in 1..depth_1} := Normal(0, 1)
-param z1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1} := Normal(0, 1)
+param mean := 0;
+param variance := 0.1;
+param a1{i in 1..rows_1 + 2 * padding_height_1, j in 1..columns_1 + 2 * padding_width_1, k in 1..depth_1} := Normal(mean, variance)
+param z1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1} := Normal(mean, variance)
 
-param a2{i in 1..totalUnitsLayer2} := Normal(0, 1);
-param z2{i in 1..totalUnitsLayer2} := Normal(0, 1);
+param a2{i in 1..totalUnitsLayer2} := Normal(mean, variance);
+param z2{i in 1..totalUnitsLayer2} := Normal(mean, variance);
 
-param a3{i in 1..columns_3} := Normal(0, 1);
-param z3{i in 1..columns_3} := Normal(0, 1);
+param a3{i in 1..columns_3} := Normal(mean, variance);
+param z3{i in 1..columns_3} := Normal(mean, variance);
 
