@@ -1,0 +1,205 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf600
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue255;\red0\green0\blue0;
+\red255\green255\blue255;\red28\green0\blue207;}
+{\*\expandedcolortbl;;\csgray\c0;\csgray\c100000;\csgenericrgb\c0\c0\c0;
+\csgenericrgb\c100000\c100000\c100000;\csgenericrgb\c11000\c0\c81000;}
+\margl1440\margr1440\vieww17380\viewh25660\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 GAN inversion progress\
+\
+Trying to match z1\
+Given input x and weight w1 and bias b1\
+Input is padded 5 on each border\
+Weight is a convolution 3hx8wx2d\
+\
+Target refers to unpadded z1\
+Best row and column include 5 columns/rows of padding\
+\
+Row 10, sweep first 10 pixels\
+\
+Row 25 = 5 + 10 * 2\
+Column = 2 * 2 * targetColumn\
+\
+finding best match for target 10 0 0 = 0.00585911563\
+best row 25 column 2 filter 0 error -1.027674410847279e-09\
+finding best match for target 10 1 0 = -0.019694211\
+best row 25 column 4 filter 0 error -3.923481508433246e-09\
+finding best match for target 10 2 0 = 0.0063596447\
+best row 25 column 6 filter 0 error 2.9392200470365615e-09\
+finding best match for target 10 3 0 = 0.00719758915\
+best row 25 column 8 filter 0 error 7.439129668176947e-10\
+finding best match for target 10 4 0 = 0.0224117972\
+best row 25 column 10 filter 0 error 9.160269608815552e-09\
+finding best match for target 10 5 0 = 0.0338001214\
+best row 25 column 12 filter 0 error 8.302456576403383e-09\
+finding best match for target 10 6 0 = 0.0262289979\
+best row 25 column 14 filter 0 error 9.783487041337136e-09\
+finding best match for target 10 7 0 = 0.0485707894\
+best row 25 column 16 filter 0 error -9.162270567242281e-09\
+finding best match for target 10 8 0 = 0.0784053057\
+best row 25 column 18 filter 0 error 1.9095056535967103e-08\
+finding best match for target 10 9 0 = 0.0719291493\
+best row 25 column 20 filter 0 error 2.000529769619064e-09\
+\
+Column 10, sweep first 10 rows\
+Row = 5 + targetRow * 2\
+Column = 2 + 2 * 10\
+\
+finding best match for target 0 10 0 = -0.00163631816\
+best row 5 column 22 filter 0 error 7.242429854621701e-11\
+finding best match for target 1 10 0 = -0.0015142801\
+best row 7 column 22 filter 0 error 7.833467164861108e-12\
+finding best match for target 2 10 0 = -0.000411008019\
+best row 9 column 22 filter 0 error -7.351755261422038e-11\
+finding best match for target 3 10 0 = 0.000203440897\
+best row 11 column 22 filter 0 error 6.627083373711949e-11\
+finding best match for target 4 10 0 = 0.00219214428\
+best row 13 column 22 filter 0 error -3.830482671503266e-10\
+finding best match for target 5 10 0 = 0.00667519541\
+best row 15 column 22 filter 0 error -6.582944840280436e-10\
+finding best match for target 6 10 0 = 0.0161710531\
+best row 17 column 22 filter 0 error -1.3765294251677496e-09\
+finding best match for target 7 10 0 = 0.0191196203\
+best row 19 column 22 filter 0 error 1.0258229612980507e-09\
+finding best match for target 8 10 0 = 0.0312077757\
+best row 21 column 22 filter 0 error 7.1553651059819146e-09\
+finding best match for target 9 10 0 = 0.052883327\
+best row 23 column 22 filter 0 error -1.3768102560818285e-09\
+\
+\
+Weight 1 is ordered in the source file as\
+[ filter, depth, height, width ]\
+\
+Weight 1 I indexed in the ampl file by\
+Height, width, depth, filter\
+\
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs22 \cf2 \cb3 \CocoaLigature0 [1, *, *] : 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 :=\
+1 -1.58470124e-03 1.59579027e-03 8.98507715e-04 6.26149340e-05 -5.39119879e-04 2.72018882e-03 1.57225656e-03 7.32498418e-04 2.17164707e-05 -3.71740998e-06 7.90264457e-04 3.42047377e-03 1.32261321e-03 -4.22240421e-03 1.18566188e-03 6.68126275e-04\
+2 -1.62908982e-03 1.59886398e-03 8.99815583e-04 3.22700835e-05 -5.11195045e-04 2.71559204e-03 1.57336018e-03 7.32205343e-04 2.98918294e-05 -5.20450840e-06 7.90188031e-04 3.40232695e-03 1.32487353e-03 -4.20028903e-03 1.18466862e-03 6.63279090e-04\
+3 -1.76927459e-03 1.59506151e-03 9.19919054e-04 -3.48798858e-05 -5.27884753e-04 2.72510294e-03 1.52819336e-03 7.06843275e-04 2.03768377e-05 -7.59814111e-06 8.04690702e-04 3.34757124e-03 1.33751030e-03 -4.18547029e-03 1.20433874e-03 6.02949644e-04\
+4 -1.83133304e-03 1.59147207e-03 8.48822878e-04 -1.42134173e-04 -5.98715444e-04 2.75974348e-03 1.45700376e-03 7.23661331e-04 3.37306556e-05 -1.39928306e-06 7.65745295e-04 3.38747283e-03 1.33163889e-03 -4.15712781e-03 1.21749926e-03 5.22798160e-04\
+\
+\
+In saved weight file\
+\
+\pard\tx593\pardeftab593\pardirnatural\partightenfactor0
+
+\fs24 \cf4 \cb5 \CocoaLigature1 param weight_conv1:=
+\f0 \cf0 \
+
+\f1 \cf4 filter0:
+\f0 \cf0 \
+
+\f1 \cf4 [[ 0.08327379 -0.0684197  -0.02332418  0.04049208  0.10305002  0.02645824
+\f0 \cf0 \
+
+\f1 \cf4    0.02751506  0.03275871]
+\f0 \cf0 \
+
+\f1 \cf4  [ 0.0735219   0.07167508 -0.09990206 -0.04228229 -0.02350833  0.07236238
+\f0 \cf0 \
+
+\f1 \cf4   -0.1061395  -0.10969879]
+\f0 \cf0 \
+
+\f1 \cf4  [ 0.05978762 -0.09929097  0.00461948  0.08311694 -0.08780773  0.07093533
+\f0 \cf0 \
+
+\f1 \cf4    0.07321635 -0.02341933]]
+\f0 \cf0 \
+
+\f1 \cf4 [[-0.06432527 -0.16150871 -0.19027846  0.0485569  -0.10300606 -0.00546495
+\f0 \cf0 \
+
+\f1 \cf4   -0.08442558  0.04518779]
+\f0 \cf0 \
+
+\f1 \cf4  [ 0.04310917 -0.21142629 -0.10456748 -0.07203136  0.00870412 -0.09026341
+\f0 \cf0 \
+
+\f1 \cf4    0.07815333  0.09247981]
+\f0 \cf0 \
+
+\f1 \cf4  [-0.01724443 -0.16356316 -0.08511722 -0.09350566 -0.16538556 -0.05181656
+\f0 \cf0 \
+
+\f1 \cf4    0.12482964 -0.01215756]]
+\f0 \cf0 \
+\
+\
+\
+In AMPL file weight_1.dat\
+\
+
+\f1 \cf4 param weight_1 :=
+\f0 \cf0 \
+\
+
+\f1 \cf4 [*, *, 1, 1] : 1 2 3 4 5 6 7 8 :=
+\f0 \cf0 \
+
+\f1 \cf4 1 0.08327379 -0.0684197 -0.02332418 0.04049208 0.10305002 0.02645824 0.02751506 0.03275871
+\f0 \cf0 \
+
+\f1 \cf4 2 0.0735219 0.07167508 -0.09990206 -0.04228229 -0.02350833 0.07236238 -0.1061395 -0.10969879
+\f0 \cf0 \
+
+\f1 \cf4 3 0.05978762 -0.09929097 0.00461948 0.08311694 -0.08780773 0.07093533 0.07321635 -0.02341933
+\f0 \cf0 \
+\
+
+\f1 \cf4 [*, *, 2, 1] : 1 2 3 4 5 6 7 8 :=
+\f0 \cf0 \
+
+\f1 \cf4 1 -0.06432527 -0.16150871 -0.19027846 0.0485569 -0.10300606 -0.00546495 -0.08442558 0.04518779
+\f0 \cf0 \
+
+\f1 \cf4 2 0.04310917 -0.21142629 -0.10456748 -0.07203136 0.00870412 -0.09026341 0.07815333 0.09247981
+\f0 \cf0 \
+
+\f1 \cf4 3 -0.01724443 -0.16356316 -0.08511722 -0.09350566 -0.16538556 -0.05181656 0.12482964 -0.01215756
+\f0 \cf0 \
+\
+\
+\
+In python generated file:\
+\
+
+\f1 \cf4 w1 = [
+\f0 \cf0 \
+
+\f1 \cf4       
+\f0 \cf0 \
+
+\f1 \cf4 [
+\f0 \cf0 \
+
+\f1 \cf4 [[ \cf6 \cb5 0.08327379\cf4 \cb5 , \cf6 \cb5 -0.0684197\cf4 \cb5 , \cf6 \cb5 -0.02332418\cf4 \cb5 , \cf6 \cb5 0.04049208\cf4 \cb5 , \cf6 \cb5 0.10305002\cf4 \cb5 , \cf6 \cb5 0.02645824\cf4 \cb5 , \cf6 \cb5 0.02751506\cf4 \cb5 , \cf6 \cb5 0.03275871\cf4 \cb5  ],
+\f0 \cf0 \
+
+\f1 \cf4 [ \cf6 \cb5 0.0735219\cf4 \cb5 , \cf6 \cb5 0.07167508\cf4 \cb5 , \cf6 \cb5 -0.09990206\cf4 \cb5 , \cf6 \cb5 -0.04228229\cf4 \cb5 , \cf6 \cb5 -0.02350833\cf4 \cb5 , \cf6 \cb5 0.07236238\cf4 \cb5 , \cf6 \cb5 -0.1061395\cf4 \cb5 , \cf6 \cb5 -0.10969879\cf4 \cb5  ],
+\f0 \cf0 \
+
+\f1 \cf4 [ \cf6 \cb5 0.05978762\cf4 \cb5 , \cf6 \cb5 -0.09929097\cf4 \cb5 , \cf6 \cb5 0.00461948\cf4 \cb5 , \cf6 \cb5 0.08311694\cf4 \cb5 , \cf6 \cb5 -0.08780773\cf4 \cb5 , \cf6 \cb5 0.07093533\cf4 \cb5 , \cf6 \cb5 0.07321635\cf4 \cb5 , \cf6 \cb5 -0.02341933\cf4 \cb5  ]],
+\f0 \cf0 \
+
+\f1 \cf4 \
+[[ \cf6 \cb5 -0.06432527\cf4 \cb5 , \cf6 \cb5 -0.16150871\cf4 \cb5 , \cf6 \cb5 -0.19027846\cf4 \cb5 , \cf6 \cb5 0.0485569\cf4 \cb5 , \cf6 \cb5 -0.10300606\cf4 \cb5 , \cf6 \cb5 -0.00546495\cf4 \cb5 , \cf6 \cb5 -0.08442558\cf4 \cb5 , \cf6 \cb5 0.04518779\cf4 \cb5  ],
+\f0 \cf0 \
+
+\f1 \cf4 [ \cf6 \cb5 0.04310917\cf4 \cb5 , \cf6 \cb5 -0.21142629\cf4 \cb5 , \cf6 \cb5 -0.10456748\cf4 \cb5 , \cf6 \cb5 -0.07203136\cf4 \cb5 , \cf6 \cb5 0.00870412\cf4 \cb5 , \cf6 \cb5 -0.09026341\cf4 \cb5 , \cf6 \cb5 0.07815333\cf4 \cb5 , \cf6 \cb5 0.09247981\cf4 \cb5  ],
+\f0 \cf0 \
+
+\f1 \cf4 [ \cf6 \cb5 -0.01724443\cf4 \cb5 , \cf6 \cb5 -0.16356316\cf4 \cb5 , \cf6 \cb5 -0.08511722\cf4 \cb5 , \cf6 \cb5 -0.09350566\cf4 \cb5 , \cf6 \cb5 -0.16538556\cf4 \cb5 , \cf6 \cb5 -0.05181656\cf4 \cb5 , \cf6 \cb5 0.12482964\cf4 \cb5 , \cf6 \cb5 -0.01215756\cf4 \cb5  ]]
+\f0 \cf0 \
+
+\f1 \cf4 ],
+\f0 \cf0 \
+}
