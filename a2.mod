@@ -13,15 +13,6 @@ param padding_width_0 := 5;
 # inputs
 var x{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0, k in 1..depth_0};
 
-### output variable
-
-# layer 4 is a single output neuron
-param columns_4 := 1;
-# activation
-var a4{i in 1..columns_4};
-param  a4_{i in 1..columns_4};
-subject to outputConstraint{i in 1..columns_4}:
-a4[i] = a4_[i];
 
 ### input variable, clamp x[.,.,1], leave x[.,.,2] free this is the answer we seek
 
@@ -48,9 +39,6 @@ param stride := 2;
 param filter_height_1 := 3;
 param filter_width_1 := 8;
 param filter_depth_1 := 2;
-
-param filter_height_1_half = 1;
-param filter_width_1_half = 4;
 
 param padding_height_1 := 5;
 param padding_width_1 := 5;
@@ -88,8 +76,10 @@ param leakiness := 0.2;
 
 # compute activations with padding
 subject to activation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-a1[i + padding_height_1, j + padding_width_1, k] = z1[i, j, k] * (1 / (1 + exp(-10000.0 * z1[i, j, k])))
-+ (1 - (1 / (1 + exp(-10000.0 * z1[i, j, k])))) * leakiness * z1[i, j, k];
+a1[i + padding_height_1, j + padding_width_1, k] = z1[i, j, k] * (1 / (1 + exp(-100.0 * z1[i, j, k])))
++ (1 - (1 / (1 + exp(-100.0 * z1[i, j, k])))) * leakiness * z1[i, j, k];
+
+
 
 # zero padding for a1
 subject to zeropad1_1{i in 1..padding_height_1, j in 1..columns_1, k in 1..depth_1}:
@@ -159,15 +149,13 @@ param z1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
 param a1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
 param a2_{i in 1..totalUnitsLayer2};
 param z2_{i in 1..totalUnitsLayer2};
-param a3_{i in 1..columns_3};
-param z3_{i in 1..columns_3};
 
 
 subject to z1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
 z1[i, j, k] = z1_[i, j, k];
 
-subject to a1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-a1[i + padding_height_1, j + padding_width_1, k] = a1_[i, j, k];
+#subject to a1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+#a1[i + padding_height_1, j + padding_width_1, k] = a1_[i, j, k];
 
 subject to z2Value{i in 1..totalUnitsLayer2}:
 z2[i] = z2_[i];
