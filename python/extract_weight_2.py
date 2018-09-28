@@ -11,7 +11,9 @@ filterCount = 1
 heightCount = 1
 depthCount = 1
 
-print("param weight_2 :=")
+lineCount = 0
+
+print("w2 = [")
 
 for line in sys.stdin:
     allWords = line.strip().split(' ')
@@ -34,15 +36,13 @@ for line in sys.stdin:
         print('words not 3', words)
     assert len(words) == 3
 
-    print('[', str(words[0]) + ', ', ])
+    data = str(words[0]) + ', ' + str(words[1]]) + ', ' + str(words[2])
+    if lineCount % filterHeight == 0:
+        print('[[', data, '],')
+    elif lineCount % filterHeight == filterHeight - 1:
+        print('[', data, ']],')
+    else:
+        print('[', str(words[0]) + ', ', ])
 
-    if heightCount == 1:
-        depthCount = depthCount + 1
-        if depthCount > filterDepth:
-            depthCount = 1
-            filterCount = filterCount + 1
 
-    heightCount = heightCount + 1
-    if heightCount > filterHeight: heightCount = 1
-
-print(";\n")
+print("]")
