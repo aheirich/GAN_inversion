@@ -35,7 +35,7 @@ sum{i in 2..rows_0, j in 1..columns_0} (x[i + padding_height_0, j + padding_widt
 +
 sum{i in 1..rows_0, j in 1..columns_0} (x[i + padding_height_0, j + padding_width_0, 1] - x_[i + padding_height_0, j + padding_width_0, 1])^2
 +
-sum{i in 1..columns_4} (a4[i] - a4_[i])^2
+10000.0 * sum{i in 1..columns_4} (a4[i] - a4_[i])^2
 ;
 
 # layer 1 is 50x50x16 convolutional layer
@@ -52,9 +52,6 @@ param stride := 2;
 param filter_height_1 := 3;
 param filter_width_1 := 8;
 param filter_depth_1 := 2;
-
-param filter_height_1_half = 1;
-param filter_width_1_half = 4;
 
 param padding_height_1 := 5;
 param padding_width_1 := 5;
@@ -90,10 +87,19 @@ subject to preactivation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
 # leaky Relu leakiness parameter
 param leakiness := 0.2;
 
+var c1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1} binary;
+
+param Upper := 10.0;
+param Lower := -10.0;
+
+subject to c1_a{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+z1[i, j, k] <= Upper * c1[i, j, k];
+subject to c1_b{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+z1[i, j, k] >= Lower * (1.0 - c1[i, j, k]);
+
 # compute activations with padding
 subject to activation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-a1[i + padding_height_1, j + padding_width_1, k] = z1[i, j, k] * (1 / (1 + exp(-10000.0 * z1[i, j, k])))
-+ (1 - (1 / (1 + exp(-10000.0 * z1[i, j, k])))) * leakiness * z1[i, j, k];
+a1[i + padding_height_1, j + padding_width_1, k] = (1.0 - c1[i, j, k]) * leakiness * z1[i, j, k] + c1[i, j, k] * z1[i, j, k];
 
 # zero padding for a1
 subject to zeropad1_1{i in 1..padding_height_1, j in 1..columns_1, k in 1..depth_1}:
@@ -121,8 +127,8 @@ param filter_height_2 := 8;
 param filter_width_2 := 3;
 param filter_depth_2 := 16;
 
-param filter_height_2_half := 4;
-param filter_width_2_half := 1;
+param row_2_base := 2;
+param column_2_base := 5;
 
 param bias_2{i in 1..depth_2};
 param totalUnitsLayer2 := rows_2 * columns_2 * depth_2;
@@ -137,21 +143,34 @@ var z2{i in 1..totalUnitsLayer2};
 param weight_2{i in 1..filter_height_2, j in 1..filter_width_2, k in 1..filter_depth_2, l in 1..depth_2};
 
 
+subject to preactivation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+    z1[i, j, k] = bias_1[k] + sum{l in 1..filter_height_1, m in 1..filter_width_1, n in 1..filter_depth_1}
+    weight_1[l, m, n, k] *
+    x[row_1_base + ((i - 1) * 2) + l, column_1_base + ((j - 1) * 2) + m,
+      n];
+
 
 subject to preactivation2{i in 1..rows_2, j in 1..columns_2, k in 1..depth_2}:
-z2[(i - 1) * columns_2 * depth_2 + (j - 1) * depth_2 + k] = bias_2[k] *
+z2[(i - 1) * columns_2 * depth_2 + (j - 1) * depth_2 + k] = bias_2[k] +
 sum{l in 1..filter_height_2, m in 1..filter_width_2, n in 1..filter_depth_2, o in 1..depth_1}
 weight_2[l, m, n, k] *
-a1[padding_height_1 + ((i - 1) * 2) + 1 + l - filter_height_2_half,
-padding_width_1 + ((j - 1) * 2) + 1 + m - filter_width_2_half,
+a1[row_2_base + ((i - 1) * 2) + l, column_2_base + ((j - 1) * 2) + m,
 o];
 
 
 
+
 # compute activations with leaky Relu
+
+var c2{i in 1..totalUnitsLayer2} binary;
+
+subject to c2_a{i in 1..totalUnitsLayer2}:
+z2[i] <= Upper * c2[i];
+subject to c2_b{i in 1..totalUnitsLayer2}:
+z2[i] >= Lower * (1.0 - c2[i]);
+
 subject to activation2{i in 1..totalUnitsLayer2}:
-a2[i] = z2[i] * (1 / (1 + exp(-10000.0 * z2[i])))
-+ (1 - (1 / (1 + exp(-10000.0 * z2[i])))) * leakiness * z2[i];
+a2[i] = (1.0 - c2[i]) * leakiness * z2[i] + c1[i] * z2[i];
 
 
 
@@ -208,21 +227,21 @@ param a3_{i in 1..columns_3};
 param z3_{i in 1..columns_3};
 
 
-subject to z1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-z1[i, j, k] = z1_[i, j, k];
+# subject to z1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+# z1[i, j, k] = z1_[i, j, k];
 
-subject to a1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-a1[i + padding_height_1, j + padding_width_1, k] = a1_[i, j, k];
+# subject to a1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+# a1[i + padding_height_1, j + padding_width_1, k] = a1_[i, j, k];
 
-subject to a2Value{i in 1..totalUnitsLayer2}:
-a2[i] = a2_[i];
+#  subject to a2Value{i in 1..totalUnitsLayer2}:
+#  a2[i] = a2_[i];
 
-subject to z2Value{i in 1..totalUnitsLayer2}:
-z2[i] = z2_[i];
+# subject to z2Value{i in 1..totalUnitsLayer2}:
+# z2[i] = z2_[i];
 
-subject to a3Value{i in 1..columns_3}:
-a3[i] = a3_[i];
+#  subject to a3Value{i in 1..columns_3}:
+# a3[i] = a3_[i];
 
-subject to z3Value{i in 1..columns_3}:
-z3[i] = z3_[i];
+# subject to z3Value{i in 1..columns_3}:
+# z3[i] = z3_[i];
 
