@@ -76,9 +76,9 @@ param leakiness := 0.2;
 
 # compute activations with padding
 subject to activation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+#a1[i + padding_height_1, j + padding_width_1, k] = if z1[i, j, k] < 0 then leakiness * z1[i, j, k] else z1[i, j, k];
 a1[i + padding_height_1, j + padding_width_1, k] = z1[i, j, k] * (1 / (1 + exp(-100.0 * z1[i, j, k])))
 + (1 - (1 / (1 + exp(-100.0 * z1[i, j, k])))) * leakiness * z1[i, j, k];
-
 
 
 # zero padding for a1
@@ -157,5 +157,5 @@ z1[i, j, k] = z1_[i, j, k];
 #subject to a1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
 #a1[i + padding_height_1, j + padding_width_1, k] = a1_[i, j, k];
 
-subject to z2Value{i in 1..totalUnitsLayer2}:
-z2[i] = z2_[i];
+# subject to z2Value{i in 1..totalUnitsLayer2}:
+# z2[i] = z2_[i];
