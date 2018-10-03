@@ -1,0 +1,28 @@
+
+for {i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0} {
+  let x[i, j, 1] := x_[i, j, 1];
+  let x[i, j, 2] := Normal(0, 0.1);
+}
+
+for {i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}{
+  let z1[i,j,k] := Normal(0, 0.1);
+  let a1[i + padding_height_1, j + padding_width_1, k] := max(z1[i, j, k], 0);
+  let c1[i,j,k] := if z1[i,j,k] >= 0 then 1 else 0;
+}
+
+for {i in 1..totalUnitsLayer2}{
+  let z2[i] := Normal(0, 0.1);
+  let a2[i] := if z2[i] >= 0 then z2[i] else 0.2 * z2[i];
+  let c2[i] := if z2[i] >= 0 then 1 else 0;
+}
+
+for {i in 1..columns_3}{
+  let z3[i] := Normal(0, 0.1);
+  let a3[i] := if z3[i] >= 0 then z3[i] else 0.2 * z3[i];
+  let c3[i] := if z3[i] >= 0 then 1 else 0;
+}
+
+for{i in 1..columns_4}{
+  let z4[i] := if a4_[i] >= 0 then a4_[i] else 0;
+  let a4[i] := a4_[i];
+}

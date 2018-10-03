@@ -29,17 +29,6 @@ param x_{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_
 subject to xValue{i in 1..rows_0 + 2 * padding_height_0, j in 1..columns_0 + 2 * padding_width_0}:
 x[i, j, 1] = x_[i, j, 1];
 
-# zero padding for x[,,2]
-subject to zeropad0_0{i in 1..padding_height_0, j in 1..columns_0 + 2 * padding_width_0}:
-x[i, j, 2] = 0;
-subject to zeropad0_2{i in 1..padding_height_0, j in 1..columns_0 + 2 * padding_width_0}:
-x[i + padding_height_0 + rows_0, j, 2] = 0;
-subject to zeropad0_3{i in 1..rows_0, j in 1..padding_width_0}:
-x[i + padding_height_0, j, 2] = 0;
-subject to zeropad0_4{i in 1..rows_0, j in 1..padding_width_0}:
-x[i + padding_height_0, j + padding_width_0 + columns_0, 2] = 0;
-
-
 # objective makes x[,,1] match expected input, x[,,2] match itself, and a4 match expected output value
 minimize discrepency: 
 sum{i in 2..rows_0, j in 1..columns_0} (x[i + padding_height_0, j + padding_width_0, 2] - x[1 + padding_height_0, j + padding_width_0, 2])^2
@@ -98,10 +87,10 @@ subject to preactivation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
 # leaky Relu leakiness parameter
 param leakiness := 0.2;
 
-var c1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1} binary;
+# var c1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1} binary;
 
-param Upper := 10.0;
-param Lower := -10.0;
+# param Upper := 10.0;
+# param Lower := -10.0;
 
 # subject to c1_a{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
 # z1[i, j, k] <= Upper * c1[i, j, k];
@@ -110,12 +99,16 @@ param Lower := -10.0;
 
 # compute activations with padding
 subject to activation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-a1[i + padding_height_1, j + padding_width_1, k] = (1.0 - c1[i, j, k]) * leakiness * z1[i, j, k] + c1[i, j, k] * z1[i, j, k];
+a1[i + padding_height_1, j + padding_width_1, k] = z1[i, j, k] * (1 / (1 + exp(-10000.0 * z1[i, j, k])))
++ (1 - (1 / (1 + exp(-10000.0 * z1[i, j, k])))) * leakiness * z1[i, j, k];
+
+
+# a1[i + padding_height_1, j + padding_width_1, k] = (1.0 - c1[i, j, k]) * leakiness * z1[i, j, k] + c1[i, j, k] * z1[i, j, k];
 
 # zero padding for a1
-subject to zeropad1_1{i in 1..padding_height_1, j in 1..columns_1 + 2 * padding_width_1, k in 1..depth_1}:
+subject to zeropad1_1{i in 1..padding_height_1, j in 1..columns_1, k in 1..depth_1}:
 a1[i, j, k] = 0;
-subject to zeropad1_2{i in 1..padding_height_1, j in 1..columns_1 + 2 * padding_width_1, k in 1..depth_1}:
+subject to zeropad1_2{i in 1..padding_height_1, j in 1..columns_1, k in 1..depth_1}:
 a1[i + padding_height_1 + rows_1, j, k] = 0;
 subject to zeropad1_3{i in 1..rows_1, j in 1..padding_width_1, k in 1..depth_1}:
 a1[i + padding_height_1, j, k] = 0;
@@ -166,7 +159,7 @@ o];
 
 # compute activations with leaky Relu
 
-var c2{i in 1..totalUnitsLayer2} binary;
+# var c2{i in 1..totalUnitsLayer2} binary;
 
 # subject to c2_a{i in 1..totalUnitsLayer2}:
 # z2[i] <= Upper * c2[i];
@@ -174,7 +167,10 @@ var c2{i in 1..totalUnitsLayer2} binary;
 # z2[i] >= Lower * (1.0 - c2[i]);
 
 subject to activation2{i in 1..totalUnitsLayer2}:
-a2[i] = (1.0 - c2[i]) * leakiness * z2[i] + c2[i] * z2[i];
+a2[i] = z2[i] * (1 / (1 + exp(-10000.0 * z2[i])))
++ (1 - (1 / (1 + exp(-10000.0 * z2[i])))) * leakiness * z2[i];
+
+# a2[i] = (1.0 - c2[i]) * leakiness * z2[i] + c2[i] * z2[i];
 
 
 
@@ -200,13 +196,9 @@ z3[l] = bias_3[l] + sum{i in 1..totalUnitsLayer2} a2[i] * weight_3[i, l];
 
 
 # compute activations with leaky Relu
-var c3{1..columns_3} binary;
-
 subject to activation3{i in 1..columns_3}:
-a3[i] = (1.0 - c3[i]) * z3[i] + c3[i] * z3[i];
-
-# a3[i] = z3[i] * (1 / (1 + exp(-10000.0 * z3[i])))
-# + (1 - (1 / (1 + exp(-10000.0 * z3[i])))) * leakiness * z3[i];
+a3[i] = z3[i] * (1 / (1 + exp(-10000.0 * z3[i])))
++ (1 - (1 / (1 + exp(-10000.0 * z3[i])))) * leakiness * z3[i];
 
 
 
@@ -227,12 +219,12 @@ a4[i] = 1.0 / (1.0 + exp(-z4[i]));
 
 ### activation targets, use this to verify the model with a known fixed point (Remove after verification)
 
-# param z1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
-# param a1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
-# param a2_{i in 1..totalUnitsLayer2};
-# param z2_{i in 1..totalUnitsLayer2};
-# param a3_{i in 1..columns_3};
-# param z3_{i in 1..columns_3};
+param z1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
+param a1_{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1};
+param a2_{i in 1..totalUnitsLayer2};
+param z2_{i in 1..totalUnitsLayer2};
+param a3_{i in 1..columns_3};
+param z3_{i in 1..columns_3};
 
 
 # subject to z1Value{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
