@@ -98,19 +98,20 @@ subject to preactivation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
 # leaky Relu leakiness parameter
 param leakiness := 0.2;
 
-var c1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1} binary;
+# var c1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1} binary;
 
 param Upper := 10.0;
 param Lower := -10.0;
 
-subject to c1_a{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-z1[i, j, k] <= Upper * c1[i, j, k];
-subject to c1_b{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-z1[i, j, k] >= Lower * (1.0 - c1[i, j, k]);
+# subject to c1_a{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+# z1[i, j, k] <= Upper * c1[i, j, k];
+# subject to c1_b{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
+# z1[i, j, k] >= Lower * (1.0 - c1[i, j, k]);
 
 # compute activations with padding
 subject to activation1{i in 1..rows_1, j in 1..columns_1, k in 1..depth_1}:
-a1[i + padding_height_1, j + padding_width_1, k] = (1.0 - c1[i, j, k]) * leakiness * z1[i, j, k] + c1[i, j, k] * z1[i, j, k];
+a1[i + padding_height_1, j + padding_width_1, k] = max(z1[i, j, k], 0) - leakiness * max(-z1[i, j, k], 0);
+# a1[i + padding_height_1, j + padding_width_1, k] = (1.0 - c1[i, j, k]) * leakiness * z1[i, j, k] + c1[i, j, k] * z1[i, j, k];
 
 # zero padding for a1
 subject to zeropad1_1{i in 1..padding_height_1, j in 1..columns_1 + 2 * padding_width_1, k in 1..depth_1}:
@@ -166,15 +167,16 @@ o];
 
 # compute activations with leaky Relu
 
-var c2{i in 1..totalUnitsLayer2} binary;
+# var c2{i in 1..totalUnitsLayer2} binary;
 
-subject to c2_a{i in 1..totalUnitsLayer2}:
-z2[i] <= Upper * c2[i];
-subject to c2_b{i in 1..totalUnitsLayer2}:
-z2[i] >= Lower * (1.0 - c2[i]);
+# subject to c2_a{i in 1..totalUnitsLayer2}:
+# z2[i] <= Upper * c2[i];
+# subject to c2_b{i in 1..totalUnitsLayer2}:
+# z2[i] >= Lower * (1.0 - c2[i]);
 
 subject to activation2{i in 1..totalUnitsLayer2}:
-a2[i] = (1.0 - c2[i]) * leakiness * z2[i] + c2[i] * z2[i];
+a2[i] = max(z2[i], 0) - leakiness * max(-z2[i], 0);
+# a2[i] = (1.0 - c2[i]) * leakiness * z2[i] + c2[i] * z2[i];
 
 
 
@@ -200,15 +202,16 @@ z3[l] = bias_3[l] + sum{i in 1..totalUnitsLayer2} a2[i] * weight_3[i, l];
 
 
 # compute activations with leaky Relu
-var c3{1..columns_3} binary;
+# var c3{1..columns_3} binary;
  
-subject to c3_a{i in 1..columns_3}:
-z3[i] <= Upper * c3[i];
-subject to c3_b{i in 1..columns_3}:
-z3[i] >= Lower * (1.0 - c3[i]);
+# subject to c3_a{i in 1..columns_3}:
+# z3[i] <= Upper * c3[i];
+# subject to c3_b{i in 1..columns_3}:
+# z3[i] >= Lower * (1.0 - c3[i]);
 
 subject to activation3{i in 1..columns_3}:
-a3[i] = (1.0 - c3[i]) * z3[i] + c3[i] * z3[i];
+a3[i] = max(z3[i], 0) - leakiness * max(-z3[i], 0);
+# a3[i] = (1.0 - c3[i]) * z3[i] + c3[i] * z3[i];
 
 # a3[i] = z3[i] * (1 / (1 + exp(-10000.0 * z3[i])))
 # + (1 - (1 / (1 + exp(-10000.0 * z3[i])))) * leakiness * z3[i];
