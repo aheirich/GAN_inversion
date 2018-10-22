@@ -25,4 +25,5 @@ display z3 ;
 display a3 ;
 display z4 ;
 display a4 ;
+commands display_solution.run ;
 quit;

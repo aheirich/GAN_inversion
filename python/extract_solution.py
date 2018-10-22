@@ -38,6 +38,7 @@ for line in f:
   if line.startswith('6 '):
     words = line.split(' ')
     solution = solution + getColumns(words)
+    if currentColumn > 100: break
 
 padding = 5
 for x in solution[padding:-padding]:

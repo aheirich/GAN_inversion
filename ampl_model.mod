@@ -41,12 +41,19 @@ x[i + padding_height_0, j + padding_width_0 + columns_0, 2] = 0;
 
 
 # objective makes x[,,1] match expected input, x[,,2] match itself, and a4 match expected output value
+param smoothing := 0.000001 ;
 minimize discrepency: 
+# all rows of x[*,*,2] match x[*,*,1]
 sum{i in 2..rows_0, j in 1..columns_0} (x[i + padding_height_0, j + padding_width_0, 2] - x[1 + padding_height_0, j + padding_width_0, 2])^2
 +
+# x[*,*,1] = x_[*,*,1]
 sum{i in 1..rows_0, j in 1..columns_0} (x[i + padding_height_0, j + padding_width_0, 1] - x_[i + padding_height_0, j + padding_width_0, 1])^2
 +
+# a4 = a4_
 10000.0 * sum{i in 1..columns_4} (a4[i] - a4_[i])^2
++
+# smoothness of solution x[*,*,2]
+smoothing * sum{i in 2..columns_0} (x[1 + padding_height_0, i + padding_width_0, 2] - x[1 + padding_height_0, i - 1 + padding_width_0, 2])^2
 ;
 
 # layer 1 is 50x50x16 convolutional layer
